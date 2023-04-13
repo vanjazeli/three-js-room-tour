@@ -21,7 +21,7 @@ const initThree = {
 
 		const controls = new OrbitControls(camera, renderer.domElement);
 		// controls.enableZoom = false;
-		controls.rotateSpeed = 0.5;
+		controls.rotateSpeed = -0.5;
 
 		const geometry = new THREE.SphereGeometry(50, 64, 64);
 		const textureLoader = new THREE.TextureLoader();
