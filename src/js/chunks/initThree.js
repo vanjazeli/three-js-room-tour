@@ -32,7 +32,7 @@ const initThree = {
 		const canvas = document.querySelector('.web-gl');
 		const scene = new THREE.Scene();
 
-		let camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
+		let camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
 		camera.position.set(20, 0, 0);
 		camera.zoom = 20;
 		camera.updateProjectionMatrix();

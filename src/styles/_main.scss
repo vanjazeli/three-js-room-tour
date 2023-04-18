@@ -64,6 +64,7 @@ body {
 }
 
 .hotspot-desc {
+	pointer-events: none;
 	font-weight: bold;
 	background-color: $white;
 	padding: 10px;
@@ -87,7 +88,7 @@ body {
 
 .room-name {
 	position: absolute;
-	z-index: 1;
+	z-index: 10;
 	top: 0;
 	left: 50%;
 	transform: translate(-50%, -100%);
@@ -124,6 +125,6 @@ body {
 	height: 100%;
 	width: 100%;
 	object-fit: cover;
-	opacity: 0.05;
+	opacity: 0.15;
 	pointer-events: none;
 }
