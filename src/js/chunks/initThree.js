@@ -1,16 +1,41 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import gsap from 'gsap';
 
 const initThree = {
 	init: function () {
-		const hotspot = document.querySelector('.js-hotspot');
+		const startingOverlay = document.querySelector('.js-starting-overlay');
+		const startingButton = document.querySelector('.js-starting-button');
+		const roomName = document.querySelector('.js-room-name');
+
+		const removeStartingOverlay = () => {
+			startingOverlay.classList.add('starting-overlay--inactive');
+			setTimeout(() => {
+				startingOverlay.style.display = 'none';
+			}, 300);
+			roomName.classList.add('room-name--active');
+			gsap.to(camera, {
+				zoom: 1,
+				duration: 1,
+				ease: 'Power4.easeOut',
+				onUpdate: () => {
+					camera.updateProjectionMatrix();
+				},
+			});
+		};
+		startingButton.addEventListener('click', removeStartingOverlay);
+
+		const canvasWrap = document.querySelector('.js-canvas-wrap');
+		const hotspot = document.querySelector('.js-hotspot-desc');
 		let hotspotActive = false;
 
 		const canvas = document.querySelector('.web-gl');
 		const scene = new THREE.Scene();
 
-		const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+		let camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
 		camera.position.set(20, 0, 0);
+		camera.zoom = 20;
+		camera.updateProjectionMatrix();
 		scene.add(camera);
 
 		const renderer = new THREE.WebGLRenderer({
@@ -23,7 +48,7 @@ const initThree = {
 		renderer.setClearColor(0x000000, 0.0);
 
 		const controls = new OrbitControls(camera, renderer.domElement);
-		// controls.enableZoom = false;
+		controls.enableZoom = false;
 		controls.rotateSpeed = -0.5;
 
 		const geometry = new THREE.SphereGeometry(50, 64, 64);
@@ -77,7 +102,7 @@ const initThree = {
 			// 	console.log(intersects[0].point);
 			// }
 		}
-		document.body.addEventListener('click', onClick);
+		canvasWrap.addEventListener('click', onClick);
 
 		function onMouseMove(e) {
 			let mouse = new THREE.Vector2((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
@@ -90,18 +115,18 @@ const initThree = {
 					hotspot.style.top = ((-1 * p.y + 1) * window.innerHeight) / 2 + 'px';
 					hotspot.style.left = ((p.x + 1) * window.innerWidth) / 2 + 'px';
 					hotspot.textContent = intersect.object.name;
-					hotspot.classList.add('hotspot--active');
+					hotspot.classList.add('hotspot-desc--active');
 					hotspotActive = true;
 					foundSprite = true;
 				}
 			});
 			if (foundSprite === false && hotspotActive) {
-				hotspot.classList.remove('hotspot--active');
+				hotspot.classList.remove('hotspot-desc--active');
 			}
 		}
-		document.body.addEventListener('mousemove', onMouseMove);
+		canvasWrap.addEventListener('mousemove', onMouseMove);
 
-		addHotspot(new THREE.Vector3(-45.29023669563931, -13.333199294732875, -16.245877966630072), 'Television');
+		addHotspot(new THREE.Vector3(-45.29023669563931, -13.333199294732875, -16.245877966630072), 'Huge TV');
 		addHotspot(new THREE.Vector3(-27.967388868792103, 0.056428030970181675, -41.43167855278803), 'Go to Bedroom');
 		addHotspot(new THREE.Vector3(49.75266425271612, -0.43246674638371774, -4.818515001423708), 'Pictures');
 	},

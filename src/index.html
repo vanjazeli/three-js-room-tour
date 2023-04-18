@@ -8,8 +8,17 @@
 		<script type="module" src="./js/main.js" defer></script>
 	</head>
 	<body>
-		<h2 class="room-name h2 js-room-name">Living room</h2>
-		<span class="hotspot js-hotspot"></span>
-		<canvas class="web-gl"></canvas>
+		<div class="starting-overlay js-starting-overlay">
+			<div class="starting-overlay__container">
+				<h1 class="starting-overlay__heading h1">Room tour</h1>
+				<span class="starting-overlay__desc">Practical use of Three.js library to simulate room tour with sprites and hotspots.</span>
+				<button class="button-round js-starting-button" type="button">Start</button>
+			</div>
+		</div>
+		<h2 class="room-name h2 js-room-name"><span class="room-name__holder">Living room</span></h2>
+		<div class="canvas-wrap js-canvas-wrap">
+			<span class="hotspot-desc js-hotspot-desc"></span>
+			<canvas class="web-gl"></canvas>
+		</div>
 	</body>
 </html>
