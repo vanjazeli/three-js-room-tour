@@ -10,4 +10,7 @@
 .h2 {
 	font-size: 36px;
 	line-height: 100%;
+	@include phone {
+		font-size: 24px;
+	}
 }
