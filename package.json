@@ -25,6 +25,7 @@
 		"vite-plugin-stylelint": "^4.3.0"
 	},
 	"dependencies": {
+		"gsap": "^3.11.5",
 		"three": "^0.151.3"
 	}
 }

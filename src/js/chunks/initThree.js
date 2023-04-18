@@ -3,10 +3,13 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 const initThree = {
 	init: function () {
+		const hotspot = document.querySelector('.js-hotspot');
+		let hotspotActive = false;
+
 		const canvas = document.querySelector('.web-gl');
 		const scene = new THREE.Scene();
 
-		const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+		const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
 		camera.position.set(20, 0, 0);
 		scene.add(camera);
 
@@ -30,12 +33,13 @@ const initThree = {
 		const sphere = new THREE.Mesh(geometry, material);
 		scene.add(sphere);
 
-		function addHotspot(position) {
+		function addHotspot(position, name) {
 			let spriteMap = new THREE.TextureLoader().load('assets/information.svg');
 			let spriteMaterial = new THREE.SpriteMaterial({
 				map: spriteMap,
 			});
 			let sprite = new THREE.Sprite(spriteMaterial);
+			sprite.name = name;
 			sprite.position.copy(position.clone().normalize().multiplyScalar(49));
 			sprite.scale.set(2, 2, 2);
 			scene.add(sprite);
@@ -55,13 +59,17 @@ const initThree = {
 		}
 		window.addEventListener('resize', onResize);
 
+		let rayCaster = new THREE.Raycaster();
+
 		function onClick(e) {
 			let mouse = new THREE.Vector2((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
-			let rayCaster = new THREE.Raycaster();
 			rayCaster.setFromCamera(mouse, camera);
 			let intersects = rayCaster.intersectObjects(scene.children);
-			console.log(intersects);
-
+			intersects.forEach((intersect) => {
+				if (intersect.object.type === 'Sprite' && intersect.object.name) {
+					console.log(intersect.object.name);
+				}
+			});
 			// when enabled, click is going to log the coordinates of the  hotspot position
 			// let intersects = rayCaster.intersectObject(sphere);
 
@@ -71,9 +79,31 @@ const initThree = {
 		}
 		document.body.addEventListener('click', onClick);
 
-		addHotspot(new THREE.Vector3(-45.29023669563931, -13.333199294732875, -16.245877966630072));
-		addHotspot(new THREE.Vector3(-27.967388868792103, 0.056428030970181675, -41.43167855278803));
-		addHotspot(new THREE.Vector3(49.75266425271612, -0.43246674638371774, -4.818515001423708));
+		function onMouseMove(e) {
+			let mouse = new THREE.Vector2((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
+			rayCaster.setFromCamera(mouse, camera);
+			let foundSprite = false;
+			let intersects = rayCaster.intersectObjects(scene.children);
+			intersects.forEach((intersect) => {
+				if (intersect.object.type === 'Sprite') {
+					let p = intersect.object.position.clone().project(camera);
+					hotspot.style.top = ((-1 * p.y + 1) * window.innerHeight) / 2 + 'px';
+					hotspot.style.left = ((p.x + 1) * window.innerWidth) / 2 + 'px';
+					hotspot.textContent = intersect.object.name;
+					hotspot.classList.add('hotspot--active');
+					hotspotActive = true;
+					foundSprite = true;
+				}
+			});
+			if (foundSprite === false && hotspotActive) {
+				hotspot.classList.remove('hotspot--active');
+			}
+		}
+		document.body.addEventListener('mousemove', onMouseMove);
+
+		addHotspot(new THREE.Vector3(-45.29023669563931, -13.333199294732875, -16.245877966630072), 'Television');
+		addHotspot(new THREE.Vector3(-27.967388868792103, 0.056428030970181675, -41.43167855278803), 'Go to Bedroom');
+		addHotspot(new THREE.Vector3(49.75266425271612, -0.43246674638371774, -4.818515001423708), 'Pictures');
 	},
 };
 
