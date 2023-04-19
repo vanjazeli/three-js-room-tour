@@ -53,9 +53,10 @@ const initThree = {
 
 		const geometry = new THREE.SphereGeometry(50, 64, 64);
 		const textureLoader = new THREE.TextureLoader();
-		const texture = textureLoader.load('assets/bedroom.jpg');
+		const texture = textureLoader.load('assets/living-room.jpg');
 		const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
-		const sphere = new THREE.Mesh(geometry, material);
+		material.transparent = true;
+		let sphere = new THREE.Mesh(geometry, material);
 		scene.add(sphere);
 
 		function addHotspot(position, name) {
@@ -86,18 +87,149 @@ const initThree = {
 
 		let rayCaster = new THREE.Raycaster();
 
+		const goToRestroom = () => {
+			gsap
+				.timeline()
+				.add('start')
+				.add(() => {
+					scene.children.forEach((child) => {
+						if (child.type === 'Sprite') {
+							setTimeout(() => {
+								scene.remove(child);
+							}, 10);
+						}
+					});
+					hotspot.classList.remove('hotspot-desc--active');
+					roomName.classList.remove('room-name--active');
+				})
+				.add(
+					gsap.to(sphere.material, {
+						opacity: 0,
+						duration: 1,
+					}),
+					'start'
+				)
+				.add(
+					gsap.to(camera, {
+						zoom: 20,
+						duration: 1,
+						onUpdate: () => {
+							camera.updateProjectionMatrix();
+						},
+					}),
+					'start'
+				)
+				.add('switch')
+				.add(() => {
+					roomName.textContent = 'Restroom';
+					roomName.classList.add('room-name--active');
+					const newTexture = textureLoader.load('assets/restroom.jpg');
+					sphere.material.map = newTexture;
+					addHotspot(new THREE.Vector3(-18.91024267712076, 19.84713644074004, -41.745526082930354), 'Go to Living Room');
+					addHotspot(new THREE.Vector3(5.7036659004321, -6.703377370565146, 49.17256452421318), 'Hella Awesome Flowers');
+				}, 'switch')
+				.add('reverse')
+				.add(
+					gsap.to(sphere.material, {
+						opacity: 1,
+						duration: 1,
+					}),
+					'reverse'
+				)
+				.add(
+					gsap.to(camera, {
+						zoom: 1,
+						duration: 1,
+						onUpdate: () => {
+							camera.updateProjectionMatrix();
+						},
+					}),
+					'reverse'
+				);
+		};
+
+		const goToLivingRoom = () => {
+			gsap
+				.timeline()
+				.add('start')
+				.add(() => {
+					scene.children.forEach((child) => {
+						if (child.type === 'Sprite') {
+							setTimeout(() => {
+								scene.remove(child);
+							}, 10);
+						}
+					});
+					hotspot.classList.remove('hotspot-desc--active');
+					roomName.classList.remove('room-name--active');
+				})
+				.add(
+					gsap.to(sphere.material, {
+						opacity: 0,
+						duration: 1,
+					}),
+					'start'
+				)
+				.add(
+					gsap.to(camera, {
+						zoom: 20,
+						duration: 1,
+						onUpdate: () => {
+							camera.updateProjectionMatrix();
+						},
+					}),
+					'start'
+				)
+				.add('switch')
+				.add(() => {
+					roomName.textContent = 'Living Room';
+					roomName.classList.add('room-name--active');
+					const newTexture = textureLoader.load('assets/living-room.jpg');
+					sphere.material.map = newTexture;
+					addHotspot(new THREE.Vector3(-45.29023669563931, -13.333199294732875, -16.245877966630072), 'Huge TV');
+					addHotspot(new THREE.Vector3(-20.64650218723565, -1.2146084934255967, -45.44575338972041), 'Go to Restroom');
+					addHotspot(new THREE.Vector3(49.75266425271612, -0.43246674638371774, -4.818515001423708), 'Awesome Pics');
+				}, 'switch')
+				.add('reverse')
+				.add(
+					gsap.to(sphere.material, {
+						opacity: 1,
+						duration: 1,
+					}),
+					'reverse'
+				)
+				.add(
+					gsap.to(camera, {
+						zoom: 1,
+						duration: 1,
+						onUpdate: () => {
+							camera.updateProjectionMatrix();
+						},
+					}),
+					'reverse'
+				);
+		};
+
 		function onClick(e) {
 			let mouse = new THREE.Vector2((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
 			rayCaster.setFromCamera(mouse, camera);
 			let intersects = rayCaster.intersectObjects(scene.children);
 			intersects.forEach((intersect) => {
 				if (intersect.object.type === 'Sprite' && intersect.object.name) {
-					console.log(intersect.object.name);
+					switch (intersect.object.name) {
+						case 'Go to Restroom': {
+							goToRestroom();
+							break;
+						}
+						case 'Go to Living Room': {
+							goToLivingRoom();
+							break;
+						}
+					}
 				}
 			});
 			// when enabled, click is going to log the coordinates of the  hotspot position
 			// let intersects = rayCaster.intersectObject(sphere);
-
 			// if (intersects.length > 0) {
 			// 	console.log(intersects[0].point);
 			// }
@@ -127,8 +259,8 @@ const initThree = {
 		canvasWrap.addEventListener('mousemove', onMouseMove);
 
 		addHotspot(new THREE.Vector3(-45.29023669563931, -13.333199294732875, -16.245877966630072), 'Huge TV');
-		addHotspot(new THREE.Vector3(-27.967388868792103, 0.056428030970181675, -41.43167855278803), 'Go to Bedroom');
-		addHotspot(new THREE.Vector3(49.75266425271612, -0.43246674638371774, -4.818515001423708), 'Pictures');
+		addHotspot(new THREE.Vector3(-20.64650218723565, -1.2146084934255967, -45.44575338972041), 'Go to Restroom');
+		addHotspot(new THREE.Vector3(49.75266425271612, -0.43246674638371774, -4.818515001423708), 'Awesome Pics');
 	},
 };
 
